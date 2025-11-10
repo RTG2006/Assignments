@@ -1,0 +1,57 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Contact {
+    string name;
+    string phone;
+    string email;
+};
+
+int linearSearch(Contact phonebook[], int size, string searchName) {
+    for (int i = 0; i < size; i++) {
+        if (phonebook[i].name == searchName) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int main() {
+    int size;
+    
+    cout << "Enter number of contacts: ";
+    cin >> size;
+    cin.ignore();
+    
+    Contact phonebook[size];
+    
+    for (int i = 0; i < size; i++) {
+        cout << "\nEnter details for contact " << (i + 1) << endl;
+        cout << "Name: ";
+        getline(cin, phonebook[i].name);
+        cout << "Phone: ";
+        getline(cin, phonebook[i].phone);
+        cout << "Email: ";
+        getline(cin, phonebook[i].email);
+    }
+    
+    string searchName;
+    
+    cout << "\nEnter contact name to search: ";
+    getline(cin, searchName);
+    
+    int index = linearSearch(phonebook, size, searchName);
+    
+    if (index != -1) {
+        cout << "\nContact Found!" << endl;
+        cout << "Name: " << phonebook[index].name << endl;
+        cout << "Phone: " << phonebook[index].phone << endl;
+        cout << "Email: " << phonebook[index].email << endl;
+    } else {
+        cout << "\nContact not found!" << endl;
+    }
+    
+    return 0;
+}
+
