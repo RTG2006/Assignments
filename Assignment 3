@@ -1,0 +1,267 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Patient {
+    int id;
+    string name;
+    int age;
+    string condition;
+    Patient* next;
+};
+
+class EmergencyQueue {
+private:
+    Patient* head;
+    Patient* tail;
+    int patientCount;
+
+public:
+    EmergencyQueue() {
+        head = NULL;
+        tail = NULL;
+        patientCount = 0;
+    }
+
+    void addPatient(int id, string name, int age, string condition) {
+        Patient* newPatient = new Patient;
+        newPatient->id = id;
+        newPatient->name = name;
+        newPatient->age = age;
+        newPatient->condition = condition;
+        newPatient->next = NULL;
+
+        if (head == NULL) {
+            head = tail = newPatient;
+        } else {
+            tail->next = newPatient;
+            tail = newPatient;
+        }
+        patientCount++;
+        cout << "\nPatient added successfully!" << endl;
+    }
+
+    void removePatient() {
+        if (head == NULL) {
+            cout << "\nNo patients in queue!" << endl;
+            return;
+        }
+
+        Patient* temp = head;
+        cout << "\nRemoving patient: " << temp->name << " (ID: " << temp->id << ")" << endl;
+        
+        head = head->next;
+        if (head == NULL) {
+            tail = NULL;
+        }
+        
+        delete temp;
+        patientCount--;
+    }
+
+    void moveToPriority(int id) {
+        if (head == NULL) {
+            cout << "\nQueue is empty!" << endl;
+            return;
+        }
+
+        if (head->id == id) {
+            cout << "\nPatient is already at the front!" << endl;
+            return;
+        }
+
+        Patient* current = head;
+        Patient* prev = NULL;
+
+        while (current != NULL && current->id != id) {
+            prev = current;
+            current = current->next;
+        }
+
+        if (current == NULL) {
+            cout << "\nPatient not found!" << endl;
+            return;
+        }
+
+        prev->next = current->next;
+        if (current == tail) {
+            tail = prev;
+        }
+
+        current->next = head;
+        head = current;
+        
+        cout << "\nPatient " << current->name << " moved to priority!" << endl;
+    }
+
+    void displayQueue() {
+        if (head == NULL) {
+            cout << "\nNo patients in queue!" << endl;
+            return;
+        }
+
+        cout << "\n=== Emergency Room Queue ===" << endl;
+        cout << "Total Patients: " << patientCount << endl << endl;
+        
+        Patient* current = head;
+        int position = 1;
+        
+        while (current != NULL) {
+            cout << "Position " << position << ":" << endl;
+            cout << "  ID: " << current->id << endl;
+            cout << "  Name: " << current->name << endl;
+            cout << "  Age: " << current->age << endl;
+            cout << "  Condition: " << current->condition << endl;
+            cout << endl;
+            current = current->next;
+            position++;
+        }
+    }
+
+    void searchPatient(int id) {
+        Patient* current = head;
+        int position = 1;
+
+        while (current != NULL) {
+            if (current->id == id) {
+                cout << "\n=== Patient Found ===" << endl;
+                cout << "Position: " << position << endl;
+                cout << "ID: " << current->id << endl;
+                cout << "Name: " << current->name << endl;
+                cout << "Age: " << current->age << endl;
+                cout << "Condition: " << current->condition << endl;
+                return;
+            }
+            current = current->next;
+            position++;
+        }
+        
+        cout << "\nPatient not found!" << endl;
+    }
+
+    void updatePatient(int id) {
+        Patient* current = head;
+
+        while (current != NULL) {
+            if (current->id == id) {
+                cout << "\n=== Update Patient Information ===" << endl;
+                cout << "Current Name: " << current->name << endl;
+                cout << "Enter new name (or press enter to keep): ";
+                cin.ignore();
+                string newName;
+                getline(cin, newName);
+                if (!newName.empty()) {
+                    current->name = newName;
+                }
+
+                cout << "Current Age: " << current->age << endl;
+                cout << "Enter new age (or 0 to keep): ";
+                int newAge;
+                cin >> newAge;
+                if (newAge != 0) {
+                    current->age = newAge;
+                }
+
+                cout << "Current Condition: " << current->condition << endl;
+                cout << "Enter new condition (or press enter to keep): ";
+                cin.ignore();
+                string newCondition;
+                getline(cin, newCondition);
+                if (!newCondition.empty()) {
+                    current->condition = newCondition;
+                }
+
+                cout << "\nPatient information updated!" << endl;
+                return;
+            }
+            current = current->next;
+        }
+        
+        cout << "\nPatient not found!" << endl;
+    }
+
+    ~EmergencyQueue() {
+        while (head != NULL) {
+            Patient* temp = head;
+            head = head->next;
+            delete temp;
+        }
+    }
+};
+
+int main() {
+    EmergencyQueue queue;
+    int choice;
+
+    do {
+        cout << "\n=== Hospital Emergency Room System ===" << endl;
+        cout << "1. Add Patient to Queue" << endl;
+        cout << "2. Remove Patient (Doctor Examination)" << endl;
+        cout << "3. Move Patient to Priority" << endl;
+        cout << "4. Display Queue" << endl;
+        cout << "5. Search Patient" << endl;
+        cout << "6. Update Patient Information" << endl;
+        cout << "7. Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: {
+                int id, age;
+                string name, condition;
+                
+                cout << "\nEnter Patient ID: ";
+                cin >> id;
+                cin.ignore();
+                cout << "Enter Patient Name: ";
+                getline(cin, name);
+                cout << "Enter Patient Age: ";
+                cin >> age;
+                cin.ignore();
+                cout << "Enter Patient Condition: ";
+                getline(cin, condition);
+                
+                queue.addPatient(id, name, age, condition);
+                break;
+            }
+            case 2:
+                queue.removePatient();
+                break;
+            case 3: {
+                int id;
+                cout << "\nEnter Patient ID to move to priority: ";
+                cin >> id;
+                queue.moveToPriority(id);
+                break;
+            }
+            case 4:
+                queue.displayQueue();
+                break;
+            case 5: {
+                int id;
+                cout << "\nEnter Patient ID to search: ";
+                cin >> id;
+                queue.searchPatient(id);
+                break;
+            }
+            case 6: {
+                int id;
+                cout << "\nEnter Patient ID to update: ";
+                cin >> id;
+                queue.updatePatient(id);
+                break;
+            }
+            case 7:
+                cout << "\nExiting system..." << endl;
+                break;
+            default:
+                cout << "\nInvalid choice! Please try again." << endl;
+        }
+    } while (choice != 7);
+
+    return 0;
+}
+
+
+
+
