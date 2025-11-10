@@ -1,0 +1,138 @@
+#include <iostream>
+using namespace std;
+
+struct Product {
+    int id;
+    string name;
+    int quantity;
+    float price;
+    int relatedID;
+};
+
+Product inventory[50];
+int count = 0;
+
+void addProduct() {
+    if(count >= 50) {
+        cout << "Inventory full\n\n";
+        return;
+    }
+    
+    cout << "Enter Product ID: ";
+    cin >> inventory[count].id;
+    
+    cout << "Enter Product Name: ";
+    cin >> inventory[count].name;
+    
+    cout << "Enter Quantity: ";
+    cin >> inventory[count].quantity;
+    
+    cout << "Enter Price: ";
+    cin >> inventory[count].price;
+    
+    inventory[count].relatedID = -1;
+    
+    cout << "Product added!\n\n";
+    count++;
+}
+
+void updateQuantity() {
+    int id, newQty;
+    
+    cout << "Enter Product ID: ";
+    cin >> id;
+    
+    for(int i = 0; i < count; i++) {
+        if(inventory[i].id == id) {
+            cout << "Enter New Quantity: ";
+            cin >> newQty;
+            inventory[i].quantity = newQty;
+            cout << "Updated!\n\n";
+            return;
+        }
+    }
+    cout << "Product not found!\n\n";
+}
+
+void linkProducts() {
+    int id1, id2;
+    
+    cout << "Enter First Product ID: ";
+    cin >> id1;
+    
+    cout << "Enter Related Product ID: ";
+    cin >> id2;
+    
+    for(int i = 0; i < count; i++) {
+        if(inventory[i].id == id1) {
+            inventory[i].relatedID = id2;
+            cout << "Products linked!\n\n";
+            return;
+        }
+    }
+    cout << "Product not found!\n\n";
+}
+
+void displayInventory() {
+    if(count == 0) {
+        cout << "No products\n\n";
+        return;
+    }
+    
+    cout << "\n--- INVENTORY ---\n";
+    for(int i = 0; i < count; i++) {
+        cout << "ID: " << inventory[i].id << endl;
+        cout << "Name: " << inventory[i].name << endl;
+        cout << "Quantity: " << inventory[i].quantity << endl;
+        cout << "Price: $" << inventory[i].price << endl;
+        
+        if(inventory[i].relatedID != -1) {
+            cout << "Related ID: " << inventory[i].relatedID << endl;
+        }
+        cout << "-----------------\n";
+    }
+    cout << endl;
+}
+
+void calculateTotal() {
+    float total = 0;
+    
+    for(int i = 0; i < count; i++) {
+        total += inventory[i].quantity * inventory[i].price;
+    }
+    
+    cout << "Total Value: $" << total << "\n\n";
+}
+
+int main() {
+    int choice;
+    
+    cout << "WAREHOUSE INVENTORY\n\n";
+    
+    while(1) {
+        cout << "1. Add Product\n";
+        cout << "2. Update Quantity\n";
+        cout << "3. Display Inventory\n";
+        cout << "4. Total Value\n";
+        cout << "5. Link Products\n";
+        cout << "6. Exit\n";
+        cout << "Choice: ";
+        cin >> choice;
+        cout << endl;
+        
+        if(choice == 1) addProduct();
+        else if(choice == 2) updateQuantity();
+        else if(choice == 3) displayInventory();
+        else if(choice == 4) calculateTotal();
+        else if(choice == 5) linkProducts();
+        else if(choice == 6) break;
+        else cout << "Invalid!\n\n";
+    }
+    
+    return 0;
+}
+
+
+
+
+
