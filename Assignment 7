@@ -1,0 +1,153 @@
+#include <iostream>
+using namespace std;
+
+struct Request {
+    int id;
+    char name[50];
+    char contact[20];
+    char serviceType[50];
+    char status[20];
+};
+
+class Queue {
+    Request arr[100];
+    int front, rear;
+public:
+    Queue() {
+        front = -1;
+        rear = -1;
+    }
+    
+    bool isEmpty() {
+        return front == -1;
+    }
+    
+    bool isFull() {
+        return rear == 99;
+    }
+    
+    void enqueue(Request req) {
+        if (isFull()) {
+            cout << "Queue is full!\n";
+            return;
+        }
+        if (isEmpty()) {
+            front = 0;
+        }
+        arr[++rear] = req;
+        cout << "Request added successfully!\n";
+    }
+    
+    Request dequeue() {
+        Request req = arr[front];
+        if (front == rear) {
+            front = -1;
+            rear = -1;
+        } else {
+            front++;
+        }
+        return req;
+    }
+    
+    void display() {
+        if (isEmpty()) {
+            cout << "No requests in queue!\n";
+            return;
+        }
+        cout << "\n--- Pending Requests ---\n";
+        for (int i = front; i <= rear; i++) {
+            cout << "ID: " << arr[i].id << " | Name: " << arr[i].name 
+                 << " | Service: " << arr[i].serviceType 
+                 << " | Status: " << arr[i].status << endl;
+        }
+    }
+    
+    int getSize() {
+        if (isEmpty()) return 0;
+        return rear - front + 1;
+    }
+};
+
+void copyString(char dest[], const char src[]) {
+    int i = 0;
+    while (src[i] != '\0') {
+        dest[i] = src[i];
+        i++;
+    }
+    dest[i] = '\0';
+}
+
+int main() {
+    Queue q;
+    Request processed[100];
+    int processedCount = 0;
+    int choice;
+    
+    while (true) {
+        cout << "\n=== Call Center Management ===\n";
+        cout << "1. Add New Request\n";
+        cout << "2. Process Next Request\n";
+        cout << "3. View Pending Requests\n";
+        cout << "4. View Processed Requests\n";
+        cout << "5. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+        
+        if (choice == 1) {
+            Request newReq;
+            cout << "Enter Request ID: ";
+            cin >> newReq.id;
+            cin.ignore();
+            cout << "Enter Customer Name: ";
+            cin.getline(newReq.name, 50);
+            cout << "Enter Contact: ";
+            cin.getline(newReq.contact, 20);
+            cout << "Enter Service Type: ";
+            cin.getline(newReq.serviceType, 50);
+            copyString(newReq.status, "Pending");
+            q.enqueue(newReq);
+        }
+        else if (choice == 2) {
+            if (q.isEmpty()) {
+                cout << "No requests to process!\n";
+            } else {
+                Request req = q.dequeue();
+                copyString(req.status, "Completed");
+                processed[processedCount++] = req;
+                cout << "\nProcessed Request:\n";
+                cout << "ID: " << req.id << " | Name: " << req.name 
+                     << " | Service: " << req.serviceType << endl;
+            }
+        }
+        else if (choice == 3) {
+            q.display();
+            cout << "Total pending: " << q.getSize() << endl;
+        }
+        else if (choice == 4) {
+            if (processedCount == 0) {
+                cout << "No processed requests!\n";
+            } else {
+                cout << "\n--- Processed Requests ---\n";
+                for (int i = 0; i < processedCount; i++) {
+                    cout << "ID: " << processed[i].id << " | Name: " << processed[i].name 
+                         << " | Service: " << processed[i].serviceType 
+                         << " | Status: " << processed[i].status << endl;
+                }
+            }
+        }
+        else if (choice == 5) {
+            cout << "Exiting...\n";
+            break;
+        }
+        else {
+            cout << "Invalid choice!\n";
+        }
+    }
+    
+    return 0;
+}
+
+
+
+
+
