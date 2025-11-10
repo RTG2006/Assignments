@@ -1,0 +1,164 @@
+#include <iostream>
+using namespace std;
+
+struct Order {
+    int id;
+    char items[100];
+    char customerName[50];
+    char status[20];
+};
+
+class CircularQueue {
+    Order arr[100];
+    int front, rear, size;
+public:
+    CircularQueue() {
+        front = -1;
+        rear = -1;
+        size = 100;
+    }
+    
+    bool isEmpty() {
+        return front == -1;
+    }
+    
+    bool isFull() {
+        return (rear + 1) % size == front;
+    }
+    
+    void enqueue(Order ord) {
+        if (isFull()) {
+            cout << "Queue is full!\n";
+            return;
+        }
+        if (isEmpty()) {
+            front = 0;
+        }
+        rear = (rear + 1) % size;
+        arr[rear] = ord;
+        cout << "Order added successfully!\n";
+    }
+    
+    Order dequeue() {
+        Order ord = arr[front];
+        if (front == rear) {
+            front = -1;
+            rear = -1;
+        } else {
+            front = (front + 1) % size;
+        }
+        return ord;
+    }
+    
+    void display() {
+        if (isEmpty()) {
+            cout << "No orders in queue!\n";
+            return;
+        }
+        cout << "\n--- Pending Orders ---\n";
+        int i = front;
+        while (true) {
+            cout << "Order ID: " << arr[i].id << endl;
+            cout << "Customer: " << arr[i].customerName << endl;
+            cout << "Items: " << arr[i].items << endl;
+            cout << "Status: " << arr[i].status << endl;
+            cout << "-------------------------\n";
+            if (i == rear) break;
+            i = (i + 1) % size;
+        }
+    }
+    
+    int getCount() {
+        if (isEmpty()) return 0;
+        if (rear >= front)
+            return rear - front + 1;
+        else
+            return size - front + rear + 1;
+    }
+};
+
+void copyString(char dest[], const char src[]) {
+    int i = 0;
+    while (src[i] != '\0') {
+        dest[i] = src[i];
+        i++;
+    }
+    dest[i] = '\0';
+}
+
+int main() {
+    CircularQueue q;
+    Order completed[100];
+    int completedCount = 0;
+    int choice;
+    
+    while (true) {
+        cout << "\n=== Drive-Thru Order Management ===\n";
+        cout << "1. Add New Order\n";
+        cout << "2. Process Next Order\n";
+        cout << "3. View Pending Orders\n";
+        cout << "4. View Completed Orders\n";
+        cout << "5. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+        
+        if (choice == 1) {
+            Order newOrder;
+            cout << "Enter Order ID: ";
+            cin >> newOrder.id;
+            cin.ignore();
+            cout << "Enter Customer Name: ";
+            cin.getline(newOrder.customerName, 50);
+            cout << "Enter Items: ";
+            cin.getline(newOrder.items, 100);
+            copyString(newOrder.status, "Pending");
+            q.enqueue(newOrder);
+        }
+        else if (choice == 2) {
+            if (q.isEmpty()) {
+                cout << "No orders to process!\n";
+            } else {
+                Order ord = q.dequeue();
+                copyString(ord.status, "Completed");
+                completed[completedCount++] = ord;
+                cout << "\nProcessed Order:\n";
+                cout << "Order ID: " << ord.id << endl;
+                cout << "Customer: " << ord.customerName << endl;
+                cout << "Items: " << ord.items << endl;
+            }
+        }
+        else if (choice == 3) {
+            q.display();
+            cout << "Total pending orders: " << q.getCount() << endl;
+        }
+        else if (choice == 4) {
+            if (completedCount == 0) {
+                cout << "No completed orders!\n";
+            } else {
+                cout << "\n--- Completed Orders ---\n";
+                for (int i = 0; i < completedCount; i++) {
+                    cout << "Order ID: " << completed[i].id << endl;
+                    cout << "Customer: " << completed[i].customerName << endl;
+                    cout << "Items: " << completed[i].items << endl;
+                    cout << "Status: " << completed[i].status << endl;
+                    cout << "-------------------------\n";
+                }
+            }
+        }
+        else if (choice == 5) {
+            cout << "Exiting...\n";
+            break;
+        }
+        else {
+            cout << "Invalid choice!\n";
+        }
+    }
+    
+    return 0;
+}
+
+
+
+
+
+
